@@ -10,7 +10,7 @@ class OrderSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Order
-        fields = ["id", "customer", "title", "status", "pizzas", "created"]
+        fields = ["id", "customer", "status", "pizzas", "created"]
 
 
 class PizzaSerializer(serializers.ModelSerializer):

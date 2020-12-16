@@ -22,7 +22,6 @@ class Order(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True)
     customer = models.ForeignKey('auth.User', related_name='orders', on_delete=models.CASCADE)
-    title = models.CharField(max_length=30)
     status = FSMIntegerField(choices=STATUS_CHOICES, default=STATUS_OPEN)
 
 

@@ -62,19 +62,13 @@ class PizzaViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        print(self.request.data)
         data = self.request.data
-
-        print(1)
-        print(data)
-        print(data["size"])
-
-        # try to get the same pizza
 
         open_order = Order.objects.filter(customer=self.request.user, status=Order.STATUS_OPEN).order_by('id').first()
 
         if not open_order:
-            raise APIException("no open order !")
+            open_order = Order(customer=self.request.user)
+            open_order.save()
 
         pizza_already_in_order = Pizza.objects.filter(order=open_order.id).filter(size=data["size"], flavour=data["flavour"])
 
