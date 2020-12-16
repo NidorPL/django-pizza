@@ -14,11 +14,12 @@ class OrderSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PizzaSerializer(serializers.ModelSerializer):
-    order = serializers.HyperlinkedRelatedField(view_name="order-detail", read_only=True,)
+    order = serializers.HyperlinkedRelatedField(view_name="order-detail", read_only=True)
+    customer = serializers.ReadOnlyField(source='order.customer.username')
 
     class Meta:
         model = Pizza
-        fields = ["created", "size", "flavour", "order", "quantity"]
+        fields = ["id", "created", "order", "customer", "size", "flavour", "quantity"]
 
 
 class UserSerializer(serializers.ModelSerializer):

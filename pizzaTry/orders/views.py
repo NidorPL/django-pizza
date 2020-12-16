@@ -38,12 +38,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer.save(customer=self.request.user)
 
     def perform_update(self, serializer):
-        print("updating in view")
-
-        print(self.request.data)
-
         status = self.request.data["status"]
-
         order = self.get_object()
 
         if status != order.status:
@@ -67,19 +62,33 @@ class PizzaViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
+        print(self.request.data)
+        data = self.request.data
+
         print(1)
-        print(self.request)
+        print(data)
+        print(data["size"])
 
-        # get not completed order of customer OR create one and add this as order
+        # try to get the same pizza
 
+        open_order = Order.objects.filter(customer=self.request.user, status=Order.STATUS_OPEN).order_by('id').first()
 
-        openorder = Order.objects.filter(customer=self.request.user).order_by('id').first()
+        if not open_order:
+            raise APIException("no open order !")
 
-        print("open order")
+        pizza_already_in_order = Pizza.objects.filter(order=open_order.id).filter(size=data["size"], flavour=data["flavour"])
 
-        print(openorder)
+        if pizza_already_in_order:
+            raise APIException("Pizza is already in order")
 
-        serializer.save(order=openorder)
+        serializer.save(order=open_order)
+
+    def perform_update(self, serializer):
+        open_order = Order.objects.filter(customer=self.request.user, status=Order.STATUS_OPEN).order_by('id').first()
+
+        if not open_order:
+            raise APIException("order cannot be changed anymore !")
+
 
 
 
