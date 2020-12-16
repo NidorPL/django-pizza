@@ -11,12 +11,6 @@ from .models import Order, Pizza
 from .serializers import OrderSerializer
 from django.db.models import Q
 
-
-
-
-# Create your views here.
-
-
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
@@ -28,6 +22,21 @@ def api_root(request, format=None):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        queryset = Order.objects.all()
+        status = self.request.query_params.get('status', None)
+        customer = self.request.query_params.get('customer', None)
+
+        if status is not None:
+            queryset = queryset.filter(status=status)
+
+        if customer is not None:
+            queryset = queryset.filter(customer=customer)
+
+        return queryset
+
+
 
     def perform_create(self, serializer):
         open_order = Order.objects.filter(Q(customer=self.request.user) & (Q(status=Order.STATUS_OPEN) | Q(status=Order.STATUS_ORDERED)))
