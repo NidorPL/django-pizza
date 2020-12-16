@@ -10,11 +10,11 @@ class OrderSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Order
-        fields = ["id", "customer", "title", "status", "created"]
+        fields = ["id", "customer", "title", "status", "pizzas", "created"]
 
 
 class PizzaSerializer(serializers.ModelSerializer):
-    order = serializers.HyperlinkedRelatedField(view_name="pizza-detail", read_only=True)
+    order = serializers.HyperlinkedRelatedField(view_name="pizza-detail", read_only=True, )
 
     class Meta:
         model = Pizza

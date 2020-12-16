@@ -36,7 +36,7 @@ class Order(models.Model):
 
 
 class Pizza(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, default="")
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="pizzas", default="")
     created = models.DateTimeField(auto_now_add=True)
     size = models.CharField(choices=PIZZA_SIZES, max_length= 100)
     flavour = models.CharField(choices=PIZZA_FLAVOURS, max_length=100)
