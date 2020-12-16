@@ -14,7 +14,7 @@ class OrderSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PizzaSerializer(serializers.ModelSerializer):
-    order = serializers.HyperlinkedRelatedField(view_name="pizza-detail", read_only=True, )
+    order = serializers.HyperlinkedRelatedField(view_name="order-detail", read_only=True,)
 
     class Meta:
         model = Pizza
