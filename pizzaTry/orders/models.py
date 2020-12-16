@@ -13,8 +13,6 @@ class Order(models.Model):
     STATUS_DELIVERED = 3
     STATUS_CANCELLED = 4
 
-    # Die Status würde ich eig in einem extra file, zB constants.py speichern und hier nur importieren wollen
-
     STATUS_CHOICES = (
         (STATUS_OPEN, 'open'),
         (STATUS_ORDERED, 'ordered'),

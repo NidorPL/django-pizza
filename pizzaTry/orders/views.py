@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 from .serializers import UserSerializer, PizzaSerializer
 from .models import Order, Pizza
 from .serializers import OrderSerializer
+from django.db.models import Q
+
 
 
 
@@ -28,19 +30,25 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
     def perform_create(self, serializer):
+        open_order = Order.objects.filter(Q(customer=self.request.user) & (Q(status=Order.STATUS_OPEN) | Q(status=Order.STATUS_ORDERED)))
+
+        if open_order:
+            raise APIException("you already have an open order")
+
         serializer.save(customer=self.request.user)
 
     def perform_update(self, serializer):
         print("updating in view")
 
-        print(self)
+        print(self.request.data)
+
+        status = self.request.data["status"]
 
         order = self.get_object()
 
-        print(order.status)
-
-        if order.status > 1:
-            raise APIException("Order cannot be changed anymore !")
+        if status != order.status:
+            if order.status > Order.STATUS_IN_DELIVERY:
+                raise APIException("Order is already finalized")
 
         serializer.save()
 
