@@ -1,11 +1,12 @@
 from django.shortcuts import render
+from rest_framework import status, permissions
 from rest_framework.decorators import api_view, action
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from rest_framework import viewsets
 from django.contrib.auth.models import User
-from .serializers import UserSerializer
-from .models import Order
+from .serializers import UserSerializer, PizzaSerializer
+from .models import Order, Pizza
 from .serializers import OrderSerializer
 
 
@@ -35,4 +36,29 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class PizzaViewSet(viewsets.ModelViewSet):
+    queryset = Pizza.objects.all()
+    serializer_class = PizzaSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        print(1)
+        print(self.request)
+
+        # get not completed order of customer OR create one and add this as order
+
+
+        openorder = Order.objects.filter(customer=self.request.user).order_by('id').first()
+
+        print("open order")
+
+        print(openorder)
+
+        serializer.save(order=openorder)
+
+
+
+
 
