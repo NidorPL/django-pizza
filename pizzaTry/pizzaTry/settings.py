@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_fsm',
     'rest_framework',
     'orders.apps.OrderConfig',
     'django.contrib.admin',

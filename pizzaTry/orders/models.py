@@ -7,42 +7,29 @@ PIZZA_SIZES = [("SMALL", "small"), ("MEDIUM", "medium"), ("LARGE", "large")]
 
 
 class Order(models.Model):
-    STATUS_CREATED = 0
-    STATUS_PAID = 1
-    STATUS_FULFILLED = 2
-    STATUS_CANCELLED = 3
-    STATUS_RETURNED = 4
+    STATUS_OPEN = 0
+    STATUS_ORDERED = 1
+    STATUS_IN_DELIVERY = 2
+    STATUS_DELIVERED = 3
+    STATUS_CANCELLED = 4
+
+    # Die Status würde ich eig in einem extra file, zB constants.py speichern und hier nur importieren wollen
+
     STATUS_CHOICES = (
-        (STATUS_CREATED, 'created'),
-        (STATUS_PAID, 'paid'),
-        (STATUS_FULFILLED, 'fulfilled'),
+        (STATUS_OPEN, 'open'),
+        (STATUS_ORDERED, 'ordered'),
+        (STATUS_IN_DELIVERY, 'in_delivery'),
+        (STATUS_DELIVERED, 'delivered'),
         (STATUS_CANCELLED, 'cancelled'),
-        (STATUS_RETURNED, 'returned'),
     )
     created = models.DateTimeField(auto_now_add=True)
     customer = models.ForeignKey('auth.User', related_name='orders', on_delete=models.CASCADE)
     title = models.CharField(max_length=30)
-    status = FSMIntegerField(choices=STATUS_CHOICES, default=STATUS_CREATED, protected=True)
-
+    status = FSMIntegerField(choices=STATUS_CHOICES, default=STATUS_OPEN)
 
 
     class Meta:
         ordering = ['created']
-
-    @transition(field=status, source=STATUS_CREATED, target=STATUS_PAID)
-    def pay(self, amount):
-        print("calling pay method")
-        self.amount = amount
-        print("Pay amount {} for the order".format(self.amount))
-    @transition(field=status, source=STATUS_PAID, target=STATUS_FULFILLED)
-    def fulfill(self):
-        print("Fulfill the order")
-    @transition(field=status, source=[STATUS_CREATED, STATUS_PAID], target=STATUS_CANCELLED)
-    def cancel(self):
-        print("Cancel the order")
-    @transition(field=status, source=STATUS_FULFILLED, target=STATUS_RETURNED)
-    def _return(self):
-        print("Return the order")
 
     def __str__(self):
         return "%s %s" % (self.title, self.customer)
