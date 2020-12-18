@@ -12,14 +12,13 @@ class PizzaSerializer(serializers.ModelSerializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    pizza = PizzaSerializer(read_only=True)
-    id=serializers.ReadOnlyField(source='pizza.id')
-    type=serializers.ReadOnlyField(source='pizza.type')
+    # Dies gibt zwar die genestete Repräsentation zurück, löscht aber leider auch das Feld aus der POST Form raus :/
+    # pizza = PizzaSerializer(read_only=True)
 
 
     class Meta:
         model = OrderItem
-        fields = ["id", "type", "order", "pizza", "size", "quantity"]
+        fields = ["id", "order", "pizza", "size", "quantity"]
 
 
 class OrderSerializer(serializers.HyperlinkedModelSerializer):
@@ -33,6 +32,7 @@ class OrderSerializer(serializers.HyperlinkedModelSerializer):
     def get_order_items(self, obj):
         qset = OrderItem.objects.filter(order=obj)
         return [OrderItemSerializer(m).data for m in qset]
+
 
 class UserSerializer(serializers.ModelSerializer):
     orders = OrderSerializer(many=True)
