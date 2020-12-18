@@ -39,7 +39,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
     def perform_create(self, serializer):
-        open_order = Order.objects.filter(Q(customer=self.request.user) & (Q(status=Order.STATUS_OPEN) | Q(status=Order.STATUS_ORDERED)))
+        open_order = Order.objects.filter(Q(customer=self.request.user), status__in=[Order.STATUS_OPEN, Order.STATUS_ORDERED])
 
         if open_order:
             raise APIException("you already have an open order")
