@@ -3,8 +3,6 @@ from rest_framework import serializers, permissions
 from .models import Order, Pizza, OrderItem
 
 
-
-
 class PizzaSerializer(serializers.ModelSerializer):
     customer = serializers.ReadOnlyField(source='order.customer.username')
 
