@@ -6,8 +6,8 @@ from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from rest_framework import viewsets
 from django.contrib.auth.models import User
-from .serializers import UserSerializer, PizzaSerializer
-from .models import Order, Pizza
+from .serializers import UserSerializer, PizzaSerializer, OrderItemSerializer
+from .models import Order, Pizza, OrderItem
 from .serializers import OrderSerializer
 from django.db.models import Q
 
@@ -73,25 +73,18 @@ class PizzaViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         data = self.request.data
 
-        open_order = Order.objects.filter(customer=self.request.user, status=Order.STATUS_OPEN).order_by('id').first()
+        pizza_already_created = Pizza.objects.filter(type=data["type"])
 
-        if not open_order:
-            open_order = Order(customer=self.request.user)
-            open_order.save()
+        if pizza_already_created:
+            raise APIException("Pizza was already created")
 
-        pizza_already_in_order = Pizza.objects.filter(order=open_order.id).filter(size=data["size"], flavour=data["flavour"])
+        serializer.save()
 
-        if pizza_already_in_order:
-            raise APIException("Pizza is already in order")
 
-        serializer.save(order=open_order)
-
-    def perform_update(self, serializer):
-        open_order = Order.objects.filter(customer=self.request.user, status=Order.STATUS_OPEN).order_by('id').first()
-
-        if not open_order:
-            raise APIException("order cannot be changed anymore !")
-
+class OrderItemViewSet(viewsets.ModelViewSet):
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 

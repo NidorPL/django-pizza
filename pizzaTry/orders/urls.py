@@ -1,4 +1,4 @@
-from .views import OrderViewSet, UserViewSet, PizzaViewSet, api_root
+from .views import OrderViewSet, UserViewSet, PizzaViewSet, api_root, OrderItemViewSet
 from rest_framework import renderers
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
@@ -16,6 +16,19 @@ order_detail = OrderViewSet.as_view({
     'patch': 'partial_update',
     'delete': 'destroy'
 })
+
+order_item_list = OrderItemViewSet.as_view({
+    'get': 'list',
+    'post': "'create"
+})
+
+order_item_detail = OrderItemViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy'
+})
+
 user_list = UserViewSet.as_view({
     'get': 'list'
 })
@@ -30,13 +43,13 @@ pizza_list = PizzaViewSet.as_view({
 
 pizza_detail = PizzaViewSet.as_view({
     'get': 'retrieve',
-    'put': 'update',
     'delete': 'destroy'
 })
 
 
 router = DefaultRouter()
 router.register(r'orders', views.OrderViewSet)
+router.register(r'order_items', views.OrderItemViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'pizzas', views.PizzaViewSet)
 

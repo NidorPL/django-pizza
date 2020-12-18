@@ -3,7 +3,17 @@ from django_fsm import FSMField, transition, FSMIntegerField
 
 
 PIZZA_FLAVOURS = [('MARGARIHA', "Margarita"), ("MARGINARA", "Marginara"), ("SALAMI", "Salami")]
-PIZZA_SIZES = [("SMALL", "small"), ("MEDIUM", "medium"), ("LARGE", "large")]
+
+
+class Pizza(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    type = models.CharField(choices=PIZZA_FLAVOURS, max_length=100)
+
+    def __str__(self):
+        return self.type
+
+    class Meta:
+        ordering = ['created']
 
 
 class Order(models.Model):
@@ -23,24 +33,27 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     customer = models.ForeignKey('auth.User', related_name='orders', on_delete=models.CASCADE)
     status = FSMIntegerField(choices=STATUS_CHOICES, default=STATUS_OPEN)
-
+    order_items = models.ManyToManyField(Pizza, through='OrderItem')
 
     class Meta:
         ordering = ['created']
 
     def __str__(self):
-        return "%s %s" % (self.title, self.customer)
+        return "%s %s" % (self.id, self.customer)
 
 
-class Pizza(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="pizzas", default="")
-    created = models.DateTimeField(auto_now_add=True)
-    size = models.CharField(choices=PIZZA_SIZES, max_length= 100)
-    flavour = models.CharField(choices=PIZZA_FLAVOURS, max_length=100)
-    quantity = models.PositiveIntegerField()
+class OrderItem(models.Model):
+    SIZE_SMALL = "SMALL"
+    SIZE_MEDIUM = "MEDIUM"
+    SIZE_LARGE = "LARGE"
+    PIZZA_SIZES = ((SIZE_SMALL, 'small'), (SIZE_MEDIUM, 'medium'), (SIZE_LARGE, 'large'))
 
-    def __str__(self):
-        return "%s %s" % (self.flavour, self.size)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    pizza = models.ForeignKey(Pizza, on_delete=models.CASCADE)
+    size = models.CharField(choices=PIZZA_SIZES, max_length=50)
+    quantity = models.IntegerField()
 
-    class Meta:
-        ordering = ['created']
+
+
+
+
