@@ -13,7 +13,7 @@ class PizzaSerializer(serializers.ModelSerializer):
 
 class OrderItemSerializer(serializers.ModelSerializer):
     # Dies gibt zwar die genestete Repräsentation zurück, löscht aber leider auch das Feld aus der POST Form raus :/
-    # pizza = PizzaSerializer(read_only=True)
+    pizza = PizzaSerializer()
 
 
     class Meta:

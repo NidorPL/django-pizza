@@ -86,13 +86,25 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     serializer_class = OrderItemSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    # overwrite create method to support nested objects
+
     def perform_create(self, serializer):
         data = self.request.data
 
-        is_pizza_already_in_order = OrderItem.objects.filter(order_id=data["order"], pizza_id=data["pizza"], size=data["size"])
+        print("data")
+        print(data)
 
-        if is_pizza_already_in_order:
-            raise APIException("Pizza with same size is already in order !")
+        print("orderItems")
+        print(OrderItem.objects.all().values())
+
+        # find same pizza type
+
+        # prevent saving duplicate pizzas
+
+        # is_pizza_already_in_order = OrderItem.objects.filter(order_id=data["order"], pizza_id=data["pizza"], size=data["size"])
+
+        # if is_pizza_already_in_order:
+          #   raise APIException("Pizza with same size is already in order !")
 
         serializer.save()
 
